@@ -1,5 +1,5 @@
 {
-  "id": "[plugin].com.pot-app.ocrspace",
+  "id": "plugin.com.pot-app.ocrspace",
   "plugin_type": "recognize",
   "icon": "icon.png",
   "display": "OCR Space",
