@@ -19,12 +19,13 @@
       {
         "key": "model",
         "display": "Model",
-        "type": "select",
+        "type": "combo",
         "options": {
           "gpt-4o": "GPT-4o",
           "gpt-4o-mini": "GPT-4o-Mini",
           "gpt-4-vision-preview": "GPT-4 Vision Preview"
         },
+        "placeholder": "输入或选择模型",
         "dynamic": true
       },
       {
