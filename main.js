@@ -12,7 +12,19 @@ async function getModels(config, utils) {
     
     try {
         // 发起GET请求以获取模型列表
-        const response = await tauriFetch(`${api_url}/models`, {
+        // 处理 API URL
+        let modelsUrl = api_url;
+        if (!/https?:\/\/.+/.test(modelsUrl)) {
+            modelsUrl = `https://${modelsUrl}`;
+        }
+        if (modelsUrl.endsWith('/')) {
+            modelsUrl = modelsUrl.slice(0, -1);
+        }
+        if (!modelsUrl.endsWith('/models')) {
+            modelsUrl += '/v1/models';
+        }
+
+        const response = await tauriFetch(modelsUrl, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${apikey}`,
@@ -26,19 +38,26 @@ async function getModels(config, utils) {
             throw new Error(`Failed to fetch models: ${response.status}`);
         }
 
-        // 从响应数据中提取模型列表
         const { data } = response.data;
-        // 将模型列表映射为具有value和label属性的对象数组
         const models = data.map(model => ({
             value: model.id,
             label: model.id
         }));
 
-        // 将模型数组转换为对象，其中模型ID既作为键又作为值
-        return models.reduce((acc, model) => {
-            acc[model.value] = model.label;
-            return acc;
-        }, {});
+        // 合并预定义模型和动态获取的模型
+        const predefinedModels = {
+            "gpt-4o": "GPT-4o",
+            "gpt-4o-mini": "GPT-4o-Mini",
+            "gpt-4-vision-preview": "GPT-4 Vision Preview"
+        };
+
+        return {
+            ...predefinedModels,
+            ...models.reduce((acc, model) => {
+                acc[model.value] = model.label;
+                return acc;
+            }, {})
+        };
     } catch (error) {
         // 捕获错误并记录到控制台
         console.error('Failed to fetch models:', error);
@@ -57,10 +76,30 @@ async function getModels(config, utils) {
  * @throws {Error} - 如果API请求失败或缺少必要的配置项，则抛出错误。
  */
 async function recognize(base64, lang, options) {
-    // 从options中解构出必要的组件
     const { config, utils } = options;
-    const { tauriFetch } = utils;
-    const { api_url, apikey, model } = config;
+    const { tauriFetch: fetch } = utils;
+    let { model = "gpt-4o", api_url, apikey, customPrompt } = config;
+
+    // 处理 API URL
+    if (!api_url) {
+        api_url = "https://api.openai.com";
+    }
+    if (!/https?:\/\/.+/.test(api_url)) {
+        api_url = `https://${api_url}`;
+    }
+    if (api_url.endsWith('/')) {
+        api_url = api_url.slice(0, -1);
+    }
+    if (!api_url.endsWith('/chat/completions')) {
+        api_url += '/v1/chat/completions';
+    }
+
+    // 处理自定义 prompt
+    if (!customPrompt) {
+        customPrompt = "从该图像中提取文本";
+    } else {
+        customPrompt = customPrompt.replaceAll("$lang", lang);
+    }
 
     // 验证必要参数
     if (!api_url || !apikey || !model) {
@@ -69,20 +108,32 @@ async function recognize(base64, lang, options) {
 
     try {
         // 发起API请求
-        const response = await tauriFetch(`${api_url}/chat/completions`, {
-            method: "POST",
+        const response = await fetch(api_url, {
+            method: 'POST',
             headers: {
-                "Authorization": `Bearer ${apikey}`,
-                "Content-Type": "application/json"
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apikey}`
             },
             body: {
                 type: "Json",
                 payload: {
-                    model: model,
+                    model,
                     messages: [
                         {
+                            role: "system",
+                            content: customPrompt
+                        },
+                        {
                             role: "user",
-                            content: `从该图像中提取文本: ${base64}`
+                            content: [
+                                {
+                                    type: "image_url",
+                                    image_url: {
+                                        url: `data:image/png;base64,${base64}`,
+                                        detail: "high"
+                                    }
+                                }
+                            ]
                         }
                     ],
                     max_tokens: 1000
