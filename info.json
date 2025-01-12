@@ -5,36 +5,14 @@
   "display": "OCR Space",
   "homepage": "https://github.com/pot-app/pot-app-recognize-plugin-template",
   "needs": [
-      {
-        "key": "api_url",
-        "display": "API URL",
-        "type": "input",
-        "placeholder": "https://api.example.com/v1"
-      },
-      {
-        "key": "apikey",
-        "display": "API Key",
-        "type": "input"
-      },
-      {
-        "key": "model",
-        "display": "Model",
-        "type": "combo",
-        "options": {
-          "gpt-4o": "GPT-4o",
-          "gpt-4o-mini": "GPT-4o-Mini",
-          "gpt-4-vision-preview": "GPT-4 Vision Preview"
-        },
-        "placeholder": "输入或选择模型",
-        "dynamic": true
-      },
-      {
-        "key": "customPrompt",
-        "display": "自定义 Prompt",
-        "type": "input",
-        "placeholder": "从该图像中提取文本"
-      }
-    ],
+    {
+      "key": "engine",
+      "display": "Engine",
+      "type": "select",
+      "options": { "1": "Engine 1", "2": "Engine 2", "3": "Engine 3" }
+    },
+    { "key": "apikey", "display": "Api Key", "type": "input" }
+  ],
   "language": {
     "auto": "eng",
     "zh_cn": "chs",
