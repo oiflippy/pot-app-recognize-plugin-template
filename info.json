@@ -12,8 +12,14 @@
       "options": {
         "gpt-4-vision-preview": "GPT-4 Vision Preview",
         "gpt-4o": "GPT-4o",
-        "gpt-4o-mini": "GPT-4o-Mini"
+        "gpt-4o-mini": "GPT-4o-Mini",
+        "custom": "自定义模型"
       }
+    },
+    {
+      "key": "customModel",
+      "display": "自定义模型名称",
+      "type": "input"
     },
     {
       "key": "requestPath",
