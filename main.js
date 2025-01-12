@@ -1,7 +1,12 @@
 async function recognize(base64, lang, options) {
     const { config, utils } = options;
     const { tauriFetch: fetch } = utils;
-    let { model = "gpt-4o", apiKey, requestPath, customPrompt } = config;
+    let { model = "gpt-4o", customModel, apiKey, requestPath, customPrompt } = config;
+
+    // 如果选择了自定义模型，使用自定义模型名称
+    if (model === "custom" && customModel) {
+        model = customModel;
+    }
 
     // 处理请求路径
     if (!requestPath) {
@@ -53,7 +58,7 @@ async function recognize(base64, lang, options) {
                     },
                 ],
             }
-        ],
+        ]
     }
 
     let res = await fetch(requestPath, {
