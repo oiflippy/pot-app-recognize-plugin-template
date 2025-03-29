@@ -10,21 +10,13 @@ async function recognize(base64, lang, options) {
 
     // 处理请求路径
     if (!requestPath) {
-        requestPath = "https://api.openai.com";
+        requestPath = "https://api.openai.com/v1/chat/completions";
     }
     if (!/https?:\/\/.+/.test(requestPath)) {
         requestPath = `https://${requestPath}`;
     }
     if (requestPath.endsWith('/')) {
         requestPath = requestPath.slice(0, -1);
-    }
-    // 修改点：优先使用自定义端点路径
-    if (model === "custom" && config.customEndpointPath) {
-        requestPath += config.customEndpointPath.startsWith('/') 
-            ? config.customEndpointPath 
-            : `/${config.customEndpointPath}`;
-    } else if (!requestPath.endsWith('/chat/completions')) {
-        requestPath += '/v1/chat/completions';
     }
 
     // 处理自定义 Prompt
