@@ -30,11 +30,6 @@
       "key": "apiKey",
       "display": "API Key",
       "type": "input"
-    },
-    {
-      "key": "customPrompt",
-      "display": "自定义 Prompt",
-      "type": "input"
     }
   ],
   "language": {
